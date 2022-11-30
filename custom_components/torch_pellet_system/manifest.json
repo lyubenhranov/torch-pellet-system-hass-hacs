@@ -1,0 +1,15 @@
+{
+  "domain": "torch_pellet_system",
+  "name": "Torch Pellet System",
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/torch_pellet_system",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@lyubenhranov"
+  ],
+  "iot_class": "cloud_polling"
+}
