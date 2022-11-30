@@ -61,7 +61,7 @@ class TorchPelletSystemSwitch(TorchPelletSystemEntity, SwitchEntity):
                 PELLET_SYSTEM_STATE_KEY
             ]
 
-            if pellet_system_state == 0:
+            if pellet_system_state == "0":
                 return False
             else:
                 return True
