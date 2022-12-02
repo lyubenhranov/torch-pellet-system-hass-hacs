@@ -10,6 +10,7 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
+    SensorDeviceClass,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import *
@@ -74,7 +75,7 @@ SENSOR_TYPES: tuple[TorchPelletSystemSensorEntityDescription, ...] = (
     TorchPelletSystemSensorEntityDescription(
         key=WATER_TEMPERATURE_SETTING_KEY,
         name="Water Temperature Setting",
-        device_class=DEVICE_CLASS_TEMPERATURE,
+        device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
         value=lambda data: get_state(data, WATER_TEMPERATURE_SETTING_KEY),
@@ -82,7 +83,7 @@ SENSOR_TYPES: tuple[TorchPelletSystemSensorEntityDescription, ...] = (
     TorchPelletSystemSensorEntityDescription(
         key=WATER_TEMPERATURE_OUT_OF_THE_PELLET_SYSTEM_KEY,
         name="Water Temperature Going out of the Pellet System",
-        device_class=DEVICE_CLASS_TEMPERATURE,
+        device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
         value=lambda data: get_state(
@@ -92,7 +93,7 @@ SENSOR_TYPES: tuple[TorchPelletSystemSensorEntityDescription, ...] = (
     TorchPelletSystemSensorEntityDescription(
         key=WATER_TEMPERATURE_COMING_IN_THE_PELLET_SYSTEM_KEY,
         name="Water Temperature Coming in the Pellet System",
-        device_class=DEVICE_CLASS_TEMPERATURE,
+        device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
         value=lambda data: get_state(
@@ -102,7 +103,7 @@ SENSOR_TYPES: tuple[TorchPelletSystemSensorEntityDescription, ...] = (
     TorchPelletSystemSensorEntityDescription(
         key=PELLET_BURNER_TEMPERATURE_KEY,
         name="Pellet Burner Temperature",
-        device_class=DEVICE_CLASS_TEMPERATURE,
+        device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
         value=lambda data: get_state(data, PELLET_BURNER_TEMPERATURE_KEY),
@@ -110,17 +111,25 @@ SENSOR_TYPES: tuple[TorchPelletSystemSensorEntityDescription, ...] = (
     TorchPelletSystemSensorEntityDescription(
         key=LIGTH_SENSOR_KEY,
         name="Flame Light Sensor",
-        device_class=DEVICE_CLASS_ILLUMINANCE,
+        device_class=SensorDeviceClass.ILLUMINANCE,
         state_class=SensorStateClass.MEASUREMENT,
         value=lambda data: get_state(data, LIGTH_SENSOR_KEY),
     ),
     TorchPelletSystemSensorEntityDescription(
         key=BURNER_CURRENT_WORKING_POWER_KEY,
         name="Burner Current Working Power",
-        device_class=DEVICE_CLASS_POWER,
+        device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         state_class=SensorStateClass.MEASUREMENT,
         value=lambda data: get_state(data, BURNER_CURRENT_WORKING_POWER_KEY),
+    ),
+    TorchPelletSystemSensorEntityDescription(
+        key=BURNED_PELLETS_QUANTITY,
+        name="Burned Pellets Quantity",
+        device_class=SensorDeviceClass.WEIGHT,
+        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value=lambda data: get_state(data, BURNED_PELLETS_QUANTITY),
     ),
 )
 
