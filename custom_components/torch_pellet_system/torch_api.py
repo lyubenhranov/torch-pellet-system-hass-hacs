@@ -69,6 +69,7 @@ class TorchApi:
             data=payload,
             files=[],
             timeout=120,
+            verify=False
         )
 
         if login_response.status_code == 200:
