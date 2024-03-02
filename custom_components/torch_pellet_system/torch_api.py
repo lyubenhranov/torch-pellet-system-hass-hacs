@@ -3,10 +3,11 @@ from codecs import encode
 import json
 import datetime
 import requests
-
+import ssl
 
 class TorchApi:
     """An API client to work with the Torch Web System"""
+    ssl._create_default_https_context = ssl._create_unverified_context
 
     SESSION_COOKIE_HEADER_VALUE = ""
 
@@ -25,6 +26,7 @@ class TorchApi:
 
     def get_new_session_id(self) -> None:
         """Getting a new session id from the Torch Web Insterface"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL)
         http_connection.request("GET", "/user/", "", {})
@@ -41,6 +43,7 @@ class TorchApi:
 
     def ensure_valid_session(self):
         """Ensuring a valid session id from the Torch Web Insterface is present"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         if self.SESSION_EXPIRATION_DATE < datetime.datetime.now():
             self.get_new_session_id()
@@ -48,6 +51,7 @@ class TorchApi:
 
     def login(self, username="", password=""):
         """Login the user in the Torch Web Insterface"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         if username == "":
             username = self.CREDENTIALS_USERNAME
@@ -82,6 +86,7 @@ class TorchApi:
 
     def __init__(self, username, password):
         """Initialize the API Module with credentials"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         self.CREDENTIALS_USERNAME = username
         self.CREDENTIALS_PASSWORD = password
@@ -90,6 +95,7 @@ class TorchApi:
 
     def set_burner_status(self, status):
         """Switching the pellet burner on and off"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         self.ensure_valid_session()
 
@@ -125,16 +131,19 @@ class TorchApi:
 
     def turn_burner_on(self):
         """Turn on the Pellet Burner"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         self.set_burner_status("on")
 
     def turn_burner_off(self):
         """Turn off the Pellet Burner"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         self.set_burner_status("off")
 
     def get_data(self):
         """Get your Torch Pellet System current data readings"""
+        ssl._create_default_https_context = ssl._create_unverified_context
 
         self.ensure_valid_session()
 
