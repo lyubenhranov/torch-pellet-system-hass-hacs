@@ -28,7 +28,7 @@ class TorchApi:
         """Getting a new session id from the Torch Web Insterface"""
         ssl._create_default_https_context = ssl._create_unverified_context
 
-        http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL)
+        http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL, context = ssl._create_unverified_context())
         http_connection.request("GET", "/user/", "", {})
         response = http_connection.getresponse()
         set_cookie_header_value = response.headers.get("Set-Cookie")
@@ -99,7 +99,7 @@ class TorchApi:
 
         self.ensure_valid_session()
 
-        http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL)
+        http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL, context = ssl._create_unverified_context())
 
         data_list = []
 
@@ -147,7 +147,7 @@ class TorchApi:
 
         self.ensure_valid_session()
 
-        http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL)
+        http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL, context = ssl._create_unverified_context())
 
         headers = {
             "Cookie": self.SESSION_COOKIE_HEADER_VALUE,
