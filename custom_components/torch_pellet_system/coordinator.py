@@ -27,7 +27,7 @@ class TorchPelletSystemDataUpdateCoordinator(DataUpdateCoordinator):
             hass=hass,
             logger=LOGGER,
             name=entry.title,
-            update_interval=timedelta(seconds=30),
+            update_interval=timedelta(seconds=60),
         )
         self.api = api
         self.config_entry = entry
