@@ -7,9 +7,9 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from const import DOMAIN
-from torch_api import TorchApi
-from coordinator import TorchPelletSystemDataUpdateCoordinator
+from .constants import DOMAIN
+from .torch_api import TorchApi
+from .coordinator import TorchPelletSystemDataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.SWITCH]
 

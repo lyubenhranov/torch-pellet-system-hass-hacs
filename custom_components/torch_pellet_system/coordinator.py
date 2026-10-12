@@ -11,10 +11,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import LOGGER
-
+from .constants import LOGGER
 from .torch_api import TorchApi
-
 
 class TorchPelletSystemDataUpdateCoordinator(DataUpdateCoordinator):
     """Data update coordinator for the Torch Pellet System integration."""

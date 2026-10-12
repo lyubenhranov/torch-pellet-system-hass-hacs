@@ -6,8 +6,8 @@ from typing import Any
 
 import voluptuous as vol
 
-from torch_api import TorchApi
-from const import DOMAIN
+from .torch_api import TorchApi
+from .constants import DOMAIN
 
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant

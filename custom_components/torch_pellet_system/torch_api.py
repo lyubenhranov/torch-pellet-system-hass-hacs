@@ -5,7 +5,7 @@ import datetime
 import requests
 import ssl
 
-from const import PELLET_SYSTEM_TNC_STATUS_KEY
+from .constants import PELLET_SYSTEM_TNC_STATUS_KEY
 
 class TorchApi:
     """An API client to work with the Torch Web System"""

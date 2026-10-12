@@ -10,8 +10,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
 
 from . import TorchPelletSystemEntity
-from const import *
-from coordinator import TorchPelletSystemDataUpdateCoordinator
+from .constants import *
+from .coordinator import TorchPelletSystemDataUpdateCoordinator
 
 async def async_setup_entry(
     hass: HomeAssistant,
