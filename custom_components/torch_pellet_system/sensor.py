@@ -19,10 +19,8 @@ from homeassistant.helpers import entity_platform
 from homeassistant.helpers.typing import StateType
 
 from . import TorchPelletSystemEntity
-from .coordinator import TorchPelletSystemDataUpdateCoordinator
-
-from .const import *
-
+from coordinator import TorchPelletSystemDataUpdateCoordinator
+from const import *
 
 def get_state(data: dict[str, float], key: str) -> str | float:
     """Get current state of the Torch Pellet Sensor."""
