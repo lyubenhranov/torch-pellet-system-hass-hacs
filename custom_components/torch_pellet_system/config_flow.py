@@ -21,6 +21,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required("username"): str,
         vol.Required("password"): str,
+        vol.Required("deviceId"): str
     }
 )
 
@@ -46,7 +47,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     """
 
     torch_api_client = await hass.async_add_executor_job(
-        TorchApi, data["username"], data["password"]
+        TorchApi, data["username"], data["password"], data["deviceId"]
     )
 
     # Validate Credentials
@@ -69,6 +70,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
             "title": "Torch Pellet System",
             "username": data["username"],
             "password": data["password"],
+            "deviceId": data["deviceId"]
         }
 
 

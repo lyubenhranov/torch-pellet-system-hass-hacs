@@ -73,14 +73,6 @@ SENSOR_TYPES: tuple[TorchPelletSystemSensorEntityDescription, ...] = (
         value=lambda data: get_state(data, PELLET_SYSTEM_TNC_STATUS_KEY),
     ),
     TorchPelletSystemSensorEntityDescription(
-        key=WATER_TEMPERATURE_SETTING_KEY,
-        name="Water Temperature Setting",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-        state_class=SensorStateClass.MEASUREMENT,
-        value=lambda data: get_state(data, WATER_TEMPERATURE_SETTING_KEY),
-    ),
-    TorchPelletSystemSensorEntityDescription(
         key=WATER_TEMPERATURE_OUT_OF_THE_PELLET_SYSTEM_KEY,
         name="Water Temperature Going out of the Pellet System",
         device_class=SensorDeviceClass.TEMPERATURE,

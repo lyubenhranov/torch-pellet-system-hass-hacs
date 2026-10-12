@@ -5,9 +5,13 @@ import datetime
 import requests
 import ssl
 
+from const import PELLET_SYSTEM_TNC_STATUS_KEY
+
 class TorchApi:
     """An API client to work with the Torch Web System"""
     ssl._create_default_https_context = ssl._create_unverified_context
+
+    USER_AGENT_VALUE = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:157.0) Gecko/20100101 Firefox/157.0"
 
     SESSION_COOKIE_HEADER_VALUE = ""
 
@@ -19,34 +23,17 @@ class TorchApi:
         "LoginSucceeded": "Login succeeded",
     }
 
-    TORCH_WEB_INTERFACE_BASE_URL = "my.torch-burner.eu"
+    TORCH_WEB_INTERFACE_BASE_URL = "my.torch.bg"
 
     CREDENTIALS_USERNAME = ""
     CREDENTIALS_PASSWORD = ""
-
-    def get_new_session_id(self) -> None:
-        """Getting a new session id from the Torch Web Insterface"""
-        ssl._create_default_https_context = ssl._create_unverified_context
-
-        http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL, context = ssl._create_unverified_context())
-        http_connection.request("GET", "/user/", "", {})
-        response = http_connection.getresponse()
-        set_cookie_header_value = response.headers.get("Set-Cookie")
-
-        self.SESSION_COOKIE_HEADER_VALUE = set_cookie_header_value[
-            0 : set_cookie_header_value.index(";")
-        ]
-
-        self.SESSION_EXPIRATION_DATE = datetime.datetime.now() + datetime.timedelta(
-            minutes=30
-        )
+    DEVICE_ID = ""
 
     def ensure_valid_session(self):
         """Ensuring a valid session id from the Torch Web Insterface is present"""
         ssl._create_default_https_context = ssl._create_unverified_context
 
         if self.SESSION_EXPIRATION_DATE < datetime.datetime.now():
-            self.get_new_session_id()
             self.login()
 
     def login(self, username="", password=""):
@@ -59,12 +46,16 @@ class TorchApi:
         if password == "":
             password = self.CREDENTIALS_PASSWORD
 
-        payload = {"username": username, "password": password}
-        headers = {"Cookie": self.SESSION_COOKIE_HEADER_VALUE}
+        payload = f"identifier={username}&password={password}"
+        headers = {
+            "User-Agent": self.USER_AGENT_VALUE,
+            "Origin": "https://my.torch.bg",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
 
         login_response = requests.request(
             "POST",
-            "https://my.torch-burner.eu/",
+            "https://my.torch.bg/login",
             headers=headers,
             data=payload,
             files=[],
@@ -73,77 +64,76 @@ class TorchApi:
         )
 
         if login_response.status_code == 200:
+
             response_content = login_response.text
 
             if (
-                response_content.find("Потребителското име и паролата несъвпадат!")
+                response_content.find("invalid_credentials")
                 != -1
             ):
                 return self.TORCH_AUTHENTICATION_RESULT["InvalidCredentials"]
             else:
+                set_cookie_header_value = login_response.headers.get("Set-Cookie")
+
+                self.SESSION_COOKIE_HEADER_VALUE = set_cookie_header_value[
+                    0 : set_cookie_header_value.index(";")
+                ]
+
+                self.SESSION_EXPIRATION_DATE = datetime.datetime.now() + datetime.timedelta(
+                    minutes=30
+                )
+
                 return self.TORCH_AUTHENTICATION_RESULT["LoginSucceeded"]
         else:
             return self.TORCH_AUTHENTICATION_RESULT["ServiceUnavailable"]
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, deviceId):
         """Initialize the API Module with credentials"""
         ssl._create_default_https_context = ssl._create_unverified_context
 
         self.CREDENTIALS_USERNAME = username
         self.CREDENTIALS_PASSWORD = password
+        self.DEVICE_ID = deviceId
 
         self.ensure_valid_session()
 
-    def set_burner_status(self, status):
-        """Switching the pellet burner on and off"""
+    def send_command_to_device(self, command):
+        """Sending commands to the pellet burner"""
+
         ssl._create_default_https_context = ssl._create_unverified_context
 
         self.ensure_valid_session()
 
         http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL, context = ssl._create_unverified_context())
 
-        data_list = []
-
-        boundary = "wL36Yn8afVp8Ag7AmP8qZ0SA4n1v9T"
-
-        data_list.append(encode("--" + boundary))
-        data_list.append(encode("Content-Disposition: form-data; name=goto;"))
-
-        data_list.append(encode("Content-Type: {}".format("text/plain")))
-        data_list.append(encode(""))
-
-        data_list.append(encode(status))
-        data_list.append(encode("--" + boundary + "--"))
-        data_list.append(encode(""))
-
-        payload = b"\r\n".join(data_list)
+        payload = f"{{\"kind\": \"{command}\"}}"
 
         headers = {
+            "User-Agent": self.USER_AGENT_VALUE,
             "Cookie": self.SESSION_COOKIE_HEADER_VALUE,
-            "X-Requested-With": "XMLHttpRequest",
-            "Content-type": "multipart/form-data; boundary={}".format(boundary),
+            "Content-Type": "application/json"
         }
 
-        http_connection.request("POST", "/user/ajax/burner_onoff", payload, headers)
+        http_connection.request("POST", f"/api/devices/{self.DEVICE_ID}/command", payload, headers)
 
-        status_set_response = http_connection.getresponse()
+        send_command_response = http_connection.getresponse()
 
-        print(status_set_response.status)
+        print(send_command_response.status)
 
     def turn_burner_on(self):
         """Turn on the Pellet Burner"""
         ssl._create_default_https_context = ssl._create_unverified_context
 
-        self.set_burner_status("on")
+        self.send_command_to_device("state.start")
 
     def turn_burner_off(self):
         """Turn off the Pellet Burner"""
         ssl._create_default_https_context = ssl._create_unverified_context
 
-        self.set_burner_status("off")
+        self.send_command_to_device("state.stop")
 
     def get_data(self):
-        """Get your Torch Pellet System current data readings"""
+        """Get your Torch Pellet System devices data"""
         ssl._create_default_https_context = ssl._create_unverified_context
 
         self.ensure_valid_session()
@@ -151,13 +141,11 @@ class TorchApi:
         http_connection = http.client.HTTPSConnection(self.TORCH_WEB_INTERFACE_BASE_URL, context = ssl._create_unverified_context())
 
         headers = {
-            "Cookie": self.SESSION_COOKIE_HEADER_VALUE,
-            "Accept": "*/*",
-            "Referer": "https://my.torch-burner.eu/user/",
-            "X-Requested-With": "XMLHttpRequest",
+            "User-Agent": self.USER_AGENT_VALUE,
+            "Cookie": self.SESSION_COOKIE_HEADER_VALUE
         }
 
-        http_connection.request("GET", "/user/ajax/get_data", "", headers)
+        http_connection.request("GET", "/devices/__data.json", "", headers)
 
         response = http_connection.getresponse()
         response_content = response.read().decode("utf-8")
@@ -168,11 +156,34 @@ class TorchApi:
 
         parsedData = json.loads(sanitized_response_content)
 
-        systemData = parsedData["vars"]
+        deviceData = None
+
+        for dataNode in parsedData["nodes"]:
+            if dataNode["type"] == "skip":
+                continue
+
+            try:
+                if dataNode["data"][0]["devices"] is not None:
+
+                    if dataNode["data"][dataNode["data"][2]["id"]] == self.DEVICE_ID:
+
+                        deviceData = dataNode["data"]
+            except:
+                continue
 
         dataToReturn = {}
 
-        for dataItem in systemData:
-            dataToReturn[dataItem["id"]] = dataItem["value"]
+        if deviceData is not None:
+            deviceTelemetry = deviceData[deviceData[2]["lastTelemetry"]]
+
+            for key, value in deviceTelemetry.items():
+                dataToReturn[key] = deviceData[value]
+
+            deviceLastSeenAtDate = datetime.datetime.strptime(deviceData[deviceData[2]["lastSeenAt"]][1], "%Y-%m-%dT%H:%M:%S.%fZ")
+
+            if (datetime.datetime.utcnow() - deviceLastSeenAtDate).seconds > 120:
+                dataToReturn[PELLET_SYSTEM_TNC_STATUS_KEY] = 0
+            else:
+                dataToReturn[PELLET_SYSTEM_TNC_STATUS_KEY] = 1
 
         return dataToReturn

@@ -19,7 +19,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Torch Pellet System from a config entry."""
 
     api = await hass.async_add_executor_job(
-        TorchApi, entry.data["username"], entry.data["password"]
+        TorchApi, entry.data["username"], entry.data["password"], entry.data["deviceId"]
     )
 
     coordinator = TorchPelletSystemDataUpdateCoordinator(hass, api, entry)
