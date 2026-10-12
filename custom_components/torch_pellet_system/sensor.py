@@ -28,23 +28,23 @@ def get_state(data: dict[str, float], key: str) -> str | float:
     data_value = data[key]
 
     if key == PELLET_SYSTEM_STATE_KEY:
-        if data_value == "0":
+        if data_value == 0:
             return "Turned Off"
-        if data_value == "1":
+        if data_value == 1:
             return "Starting"
-        if data_value == "3":
+        if data_value == 3:
             return "Burning"
-        if data_value == "4" or data_value == "5":
+        if data_value == 4 or data_value == 5:
             return "Cooling Down"
-        if data_value == "6":
+        if data_value == 6:
             return "Waiting"
 
         return "Unknown State"
 
     if key == PELLET_SYSTEM_TNC_STATUS_KEY:
-        if data_value == "0":
+        if data_value == 0:
             return "Offline"
-        if data_value == "1":
+        if data_value == 1:
             return "Online"
 
         return "Unknown State"
